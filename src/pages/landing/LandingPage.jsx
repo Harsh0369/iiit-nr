@@ -77,7 +77,7 @@ export default function LandingPage() {
               <div className="flex justify-center gap-4">
                 <Button
                   size="lg"
-                  onClick={() => navigate('/auth')}
+                  onClick={() => navigate('/dashboard')}
                   className="bg-blue-600 hover:bg-blue-700"
                 >
                   Get Started
