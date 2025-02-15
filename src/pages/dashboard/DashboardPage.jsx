@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import {
   LineChart,
   Line,
@@ -10,188 +11,312 @@ import {
   PieChart,
   Pie,
   Cell,
-  BarChart,
-  Bar,
 } from "recharts";
 import { BarChart3, TrendingUp, MessageCircle, Users } from "lucide-react";
 
-const API_URL =
-  "https://iiitnayaraipur-hackathon-backend-1.onrender.com/api/v1/analyse/yt";
+const COLORS = ["#4CAF50", "#FFC107", "#F44336"];
 
 export default function DashboardPage() {
   const [ytLink, setYtLink] = useState("");
   const [data, setData] = useState(null);
-  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [chartData, setChartData] = useState({
+    lineData: [],
+    pieData: [],
+    stats: {},
+  });
 
-  const handleAnalyse = async () => {
-    setError("");
-    setData(null);
+  const handleAnalyze = async () => {
+    if (!ytLink) {
+      setError("Please enter a valid YouTube link.");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    console.log("Starting analysis for YouTube link:", ytLink);
+
     try {
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ytVideoLink: ytLink }),
-      });
+      // Checkpoint 1: Sending POST request
+      console.log("Sending POST request to backend...");
+      const response = await axios.post(
+        "https://iiitnayaraipur-hackathon-backend-1.onrender.com/api/v1/analyse/yt",
+        { ytVideoLink: ytLink }
+      );
+      console.log("Backend response received:", response);
 
-      if (!response.ok) {
-        throw new Error(`Server Error: ${response.statusText}`);
+      if (response.data.success) {
+        // Checkpoint 2: Processing response data
+        console.log("Processing response data...");
+        const { comments, prespectiveAnalysis } = response.data;
+
+        // Process data for charts and stats
+        let cumulativeSum = 0;
+        const lineData = prespectiveAnalysis.map((analysis, index) => {
+          const maxScore = Math.max(
+            analysis.toxicity,
+            analysis.profanity,
+            analysis.severe_toxicity,
+            analysis.insult,
+            analysis.threat
+          );
+          cumulativeSum += maxScore;
+          return {
+            name: `#${index + 1}`,
+            value: cumulativeSum / (index + 1),
+          };
+        });
+
+        let positive = 0,
+          neutral = 0,
+          negative = 0;
+        prespectiveAnalysis.forEach((analysis) => {
+          const score = Math.max(
+            analysis.toxicity,
+            analysis.profanity,
+            analysis.severe_toxicity,
+            analysis.insult,
+            analysis.threat
+          );
+          if (score >= 0.5) negative++;
+          else if (score >= 0.3) neutral++;
+          else positive++;
+        });
+
+        const uniqueAuthors = new Set(comments.map((c) => c.author)).size;
+        const totalSentiment = prespectiveAnalysis.reduce((acc, analysis) => {
+          const maxScore = Math.max(
+            analysis.toxicity,
+            analysis.profanity,
+            analysis.severe_toxicity,
+            analysis.insult,
+            analysis.threat
+          );
+          return acc + (1 - maxScore);
+        }, 0);
+
+        setData({ comments, prespectiveAnalysis });
+        setChartData({
+          lineData,
+          pieData: [
+            { name: "Positive", value: positive },
+            { name: "Neutral", value: neutral },
+            { name: "Negative", value: negative },
+          ],
+          stats: {
+            totalMentions: comments.length,
+            sentimentScore: (
+              (totalSentiment / prespectiveAnalysis.length) *
+              100
+            ).toFixed(1),
+            activeUsers: uniqueAuthors,
+            engagementRate: (
+              (negative / prespectiveAnalysis.length) *
+              100
+            ).toFixed(1),
+          },
+        });
+        console.log("Data processing complete");
+      } else {
+        throw new Error("Failed to analyze comments");
       }
-
-      const result = await response.json();
-      console.log("API Response:", result);
-      setData(result);
-    } catch (err) {
-      console.error("Fetch Error:", err.message);
-      setError("Failed to fetch data. Please check the link and try again.");
+    } catch (error) {
+      console.error("Analysis error:", error);
+      setError(error.response?.data?.message || error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <h1 className="text-3xl font-bold text-gray-900">
-            YouTube Analytics Dashboard
+            YouTube Comment Analysis
           </h1>
         </div>
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Input for YouTube Link */}
-        <div className="bg-white p-6 rounded-lg shadow mb-8">
-          <h2 className="text-xl font-semibold mb-4">
-            Enter YouTube Video Link
-          </h2>
-          <div className="flex space-x-4">
+        {/* YouTube Link Input */}
+        <div className="mb-8">
+          <div className="flex gap-4">
             <input
               type="text"
-              className="border p-2 rounded flex-1"
-              placeholder="Paste YouTube video link here..."
               value={ytLink}
               onChange={(e) => setYtLink(e.target.value)}
+              placeholder="Enter YouTube video link"
+              className="flex-1 p-2 border rounded-lg"
             />
             <button
-              className="bg-blue-500 text-white px-4 py-2 rounded"
-              onClick={handleAnalyse}
+              onClick={handleAnalyze}
+              disabled={loading}
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 disabled:bg-blue-300"
             >
-              Analyze
+              {loading ? "Analyzing..." : "Analyze"}
             </button>
           </div>
           {error && <p className="text-red-500 mt-2">{error}</p>}
         </div>
 
-        {/* Display Statistics After Fetching Data */}
-        {data ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Sentiment Trend */}
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-xl font-semibold mb-4 flex items-center">
-                <TrendingUp className="w-6 h-6 mr-2" /> Sentiment Trend
-              </h2>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={data.sentiment_trend || []}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Line
-                      type="monotone"
-                      dataKey="value"
-                      stroke="#3B82F6"
-                      strokeWidth={2}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
+        {data && (
+          <>
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <StatCard
+                title="Total Comments"
+                value={chartData.stats.totalMentions}
+                icon={<MessageCircle className="h-6 w-6" />}
+              />
+              <StatCard
+                title="Sentiment Score"
+                value={chartData.stats.sentimentScore}
+                icon={<TrendingUp className="h-6 w-6" />}
+              />
+              <StatCard
+                title="Unique Authors"
+                value={chartData.stats.activeUsers}
+                icon={<Users className="h-6 w-6" />}
+              />
+              <StatCard
+                title="Toxic Comments"
+                value={`${chartData.stats.engagementRate}%`}
+                icon={<BarChart3 className="h-6 w-6" />}
+              />
             </div>
 
-            {/* Sentiment Distribution */}
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-xl font-semibold mb-4 flex items-center">
-                <MessageCircle className="w-6 h-6 mr-2" /> Sentiment
-                Distribution
-              </h2>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={data.sentiment_distribution || []}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={100}
-                      fill="#8884d8"
-                      paddingAngle={5}
-                      dataKey="value"
-                      label
-                    >
-                      {(data.sentiment_distribution || []).map(
-                        (entry, index) => (
+            {/* Charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+              <div className="bg-white p-6 rounded-lg shadow">
+                <h2 className="text-xl font-semibold mb-4">Toxicity Trend</h2>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={chartData.lineData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis
+                        tickFormatter={(value) => `${Math.round(value * 100)}%`}
+                      />
+                      <Tooltip
+                        formatter={(value) => `${(value * 100).toFixed(1)}%`}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="value"
+                        stroke="#3B82F6"
+                        strokeWidth={2}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              <div className="bg-white p-6 rounded-lg shadow">
+                <h2 className="text-xl font-semibold mb-4">
+                  Sentiment Distribution
+                </h2>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={chartData.pieData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={100}
+                        paddingAngle={5}
+                        dataKey="value"
+                        label
+                      >
+                        {chartData.pieData.map((entry, index) => (
                           <Cell
                             key={`cell-${index}`}
                             fill={COLORS[index % COLORS.length]}
                           />
-                        )
-                      )}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(value) => `${value} comments`} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
             </div>
 
-            {/* Comment Statistics */}
+            {/* Comments Table */}
             <div className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-xl font-semibold mb-4 flex items-center">
-                <Users className="w-6 h-6 mr-2" /> Comment Statistics
-              </h2>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={data.comment_statistics || []}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="count" fill="#3B82F6" />
-                  </BarChart>
-                </ResponsiveContainer>
+              <h2 className="text-xl font-semibold mb-4">Comment Analysis</h2>
+              <div className="overflow-x-auto">
+                <table className="min-w-full">
+                  <thead>
+                    <tr>
+                      <th className="px-4 py-2 text-left">Author</th>
+                      <th className="px-4 py-2 text-left">Comment</th>
+                      <th className="px-4 py-2 text-left">Toxicity</th>
+                      <th className="px-4 py-2 text-left">Profanity</th>
+                      <th className="px-4 py-2 text-left">Severe Toxicity</th>
+                      <th className="px-4 py-2 text-left">Insult</th>
+                      <th className="px-4 py-2 text-left">Threat</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.comments.map((comment, index) => (
+                      <tr key={index} className="border-t">
+                        <td className="px-4 py-2">{comment.author}</td>
+                        <td className="px-4 py-2">{comment.comment}</td>
+                        <td className="px-4 py-2">
+                          {(
+                            data.prespectiveAnalysis[index].toxicity * 100
+                          ).toFixed(1)}
+                          %
+                        </td>
+                        <td className="px-4 py-2">
+                          {(
+                            data.prespectiveAnalysis[index].profanity * 100
+                          ).toFixed(1)}
+                          %
+                        </td>
+                        <td className="px-4 py-2">
+                          {(
+                            data.prespectiveAnalysis[index].severe_toxicity *
+                            100
+                          ).toFixed(1)}
+                          %
+                        </td>
+                        <td className="px-4 py-2">
+                          {(
+                            data.prespectiveAnalysis[index].insult * 100
+                          ).toFixed(1)}
+                          %
+                        </td>
+                        <td className="px-4 py-2">
+                          {(
+                            data.prespectiveAnalysis[index].threat * 100
+                          ).toFixed(1)}
+                          %
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
-
-            {/* Engagement Score */}
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-xl font-semibold mb-4 flex items-center">
-                <BarChart3 className="w-6 h-6 mr-2" /> Engagement Score
-              </h2>
-              <p className="text-lg font-bold text-gray-700">
-                {data.engagement_score
-                  ? data.engagement_score
-                  : "No data available"}
-              </p>
-            </div>
-
-            {/* Total Comments */}
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-xl font-semibold mb-4 flex items-center">
-                <MessageCircle className="w-6 h-6 mr-2" /> Total Comments
-              </h2>
-              <p className="text-lg font-bold text-gray-700">
-                {data.total_comments
-                  ? data.total_comments
-                  : "No data available"}
-              </p>
-            </div>
-          </div>
-        ) : (
-          <p className="text-gray-600 text-center">
-            Enter a YouTube link to see analytics.
-          </p>
+          </>
         )}
       </main>
     </div>
   );
 }
 
-const COLORS = ["#4CAF50", "#FFC107", "#F44336"];
+function StatCard({ title, value, icon }) {
+  return (
+    <div className="bg-white p-6 rounded-lg shadow">
+      <div className="flex items-center justify-between mb-4">
+        <div className="bg-blue-100 p-3 rounded-full">{icon}</div>
+      </div>
+      <h3 className="text-gray-600 text-sm font-medium">{title}</h3>
+      <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
+    </div>
+  );
+}
