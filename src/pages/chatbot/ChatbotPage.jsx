@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import loader from "../../../public/loader-1.gif"
+import loader from "../../../public/loader-1.gif";
 import { FaPaperPlane, FaMicrophone, FaChevronDown } from "react-icons/fa";
 import { Listbox } from "@headlessui/react";
 import axios from "axios";
@@ -29,11 +29,19 @@ export default function ChatbotPage() {
   };
 
   async function fetchMessages(text, lang) {
-    const response = await axios.post("http://localhost:3000/chatbot", {
-      message: text,
-      language: lang,
-    });
-    return response.data.message.response;
+    try {
+      const response = await axios.post(
+        "https://iiitnayaraipur-hackathon-backend-1.onrender.com/api/v1/chatbot/chat",
+        {
+          message: { text: text },
+          language: { name: lang.name },
+        }
+      );
+      return response.data.message.response;
+    } catch (error) {
+      console.error("Error fetching message:", error);
+      return "Error communicating with chatbot.";
+    }
   }
 
   async function sendMessage() {
@@ -42,7 +50,7 @@ export default function ChatbotPage() {
       setMessages((prevMessages) => [...prevMessages, userMessage]);
       setInput("");
       setIsLoading(true);
-      const response = await fetchMessages(userMessage, selectedLanguage);
+      const response = await fetchMessages(userMessage.text, selectedLanguage);
       const aiMessage = { text: response, sender: "ai" };
       setMessages((prevMessages) => [...prevMessages, aiMessage]);
       setIsLoading(false);
@@ -133,10 +141,7 @@ export default function ChatbotPage() {
               </div>
             </div>
           ))}
-          {/* Loader animation */}
-          {isLoading && (
-            <img src={loader} alt=""  className="h-7"/>
-            )}
+          {isLoading && <img src={loader} alt="" className="h-7" />}
         </div>
         <div className="w-full flex items-center bg-gray-100 p-4 rounded-lg shadow-lg">
           <input
