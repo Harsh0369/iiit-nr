@@ -57,6 +57,26 @@ export function Navbar() {
                 Twitter
               </Link>
               <Link
+                to="/trending"
+                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                  location.pathname === "/trending"
+                    ? "border-blue-500 text-gray-900"
+                    : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                }`}
+              >
+                Trending
+              </Link>
+              <Link
+                to="/chatbot"
+                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                  location.pathname === "/chatbot"
+                    ? "border-blue-500 text-gray-900"
+                    : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                }`}
+              >
+                Chat
+              </Link>
+              <Link
                 to="/profile"
                 className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
                   location.pathname === "/profile"
