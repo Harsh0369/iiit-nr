@@ -8,6 +8,7 @@ import ProfilePage from "./pages/profile/ProfilePage";
 import ChatbotPage from "./pages/chatbot/ChatbotPage";
 import ChannelsPage from "./pages/channel/ChannelsPage";
 import TwitterSentimentPage from "./pages/twitter/TwitterSentimentPage";
+import TrendingPage from "./pages/trending/TrendingPages";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/chatbot" element={<ChatbotPage />} />
           <Route path="/channels" element={<ChannelsPage />} />
           <Route path="/twitter" element={<TwitterSentimentPage />} />
+          <Route path="/trending" element={<TrendingPage />} />
         </Routes>
       </div>
     </Router>
