@@ -12,11 +12,7 @@ export default function ChatbotPage() {
   ];
 
   const [selectedLanguage, setSelectedLanguage] = useState(languages[0]);
-  const [chatHistory, setChatHistory] = useState([
-    "How does AI work?",
-    "What is React?",
-    "Explain Tailwind CSS.",
-  ]);
+  const [chatSessions, setChatSessions] = useState([]); // Store previous chats
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [recognition, setRecognition] = useState(null);
@@ -101,26 +97,49 @@ export default function ChatbotPage() {
     };
   }, [recognition]);
 
+  // Function to start a new chat
+  const startNewChat = () => {
+    if (messages.length > 0) {
+      // Save the current chat session before resetting
+      setChatSessions((prevSessions) => [
+        {
+          id: prevSessions.length + 1,
+          messages: messages,
+          title: messages[0]?.text || "Untitled Chat",
+        },
+        ...prevSessions,
+      ]);
+    }
+    setMessages([]); // Clear current chat
+  };
+
   return (
     <div className="flex h-screen bg-white text-black max-w-screen">
+      {/* Sidebar */}
       <div className="relative w-1/4 bg-gray-100 p-4 border-r border-gray-300">
         <h2 className="text-xl font-semibold mb-4 mt-20">Chat History</h2>
         <ul className="space-y-2">
-          {chatHistory.map((chat, index) => (
+          {chatSessions.map((session, index) => (
             <li
               key={index}
               className="p-2 bg-gray-200 rounded cursor-pointer hover:bg-gray-300"
+              onClick={() => setMessages(session.messages)} // Load previous chat
             >
-              {chat}
+              {session.title}
             </li>
           ))}
         </ul>
         <div className="w-full bottom-10 absolute -ml-4 p-4">
-          <button className="bg-blue-500 p-2 w-full rounded-lg hover:bg-blue-400">
+          <button
+            className="bg-blue-500 p-2 w-full rounded-lg hover:bg-blue-400"
+            onClick={startNewChat}
+          >
             New Chat
           </button>
         </div>
       </div>
+
+      {/* Chat Section */}
       <div className="flex-1 flex flex-col justify-end p-6 mt-16">
         <div className="w-full space-y-4 overflow-y-auto mb-4">
           {messages.map((message, index) => (
@@ -143,6 +162,8 @@ export default function ChatbotPage() {
           ))}
           {isLoading && <img src={loader} alt="" className="h-7" />}
         </div>
+
+        {/* Input Section */}
         <div className="w-full flex items-center bg-gray-100 p-4 rounded-lg shadow-lg">
           <input
             type="text"
