@@ -28,23 +28,33 @@ const features = [
 
 const teamMembers = [
   {
-    name: 'Sarah Johnson',
-    role: 'CEO & Founder',
-    image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
-    bio: 'Leading the vision for next-generation sentiment analysis.'
+    name: "Harsh Agarwal",
+    role: "Web Developer",
+    image:
+      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+    bio: "Leading the vision for next-generation sentiment analysis.",
   },
   {
-    name: 'Michael Chen',
-    role: 'Chief Technology Officer',
-    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
-    bio: 'Architecting innovative solutions in AI and machine learning.'
+    name: "Arjun Verma",
+    role: "Web Developer",
+    image:
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+    bio: "Architecting innovative solutions in AI and machine learning.",
   },
   {
-    name: 'Emily Rodriguez',
-    role: 'Head of Product',
-    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
-    bio: 'Crafting intuitive user experiences for complex data analysis.'
-  }
+    name: "Divyanshu Mishra",
+    role: "AI-ML Engineer",
+    image:
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+    bio: "Crafting intuitive user experiences for complex data analysis.",
+  },
+  {
+    name: "Bharat Kushwaha",
+    role: "App Developer",
+    image:
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+    bio: "Crafting intuitive user experiences for complex data analysis.",
+  },
 ];
 
 export default function LandingPage() {
@@ -129,7 +139,7 @@ export default function LandingPage() {
               The experts behind our sentiment analysis platform
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {teamMembers.map((member, index) => (
               <div
                 key={index}
@@ -139,7 +149,7 @@ export default function LandingPage() {
                   <img
                     src={member.image}
                     alt={member.name}
-                    className="w-full h-64 object-cover"
+                    className="w-full h-48 object-cover"
                   />
                 </div>
                 <div className="p-6">

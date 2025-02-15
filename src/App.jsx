@@ -6,6 +6,7 @@ import AuthPage from "./pages/auth/AuthPage";
 import DashboardPage from "./pages/dashboard/DashboardPage";
 import ProfilePage from "./pages/profile/ProfilePage";
 import ChatbotPage from "./pages/chatbot/ChatbotPage";
+import ChannelsPage from "./pages/channel/ChannelsPage";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/chatbot" element={<ChatbotPage />} />
+          <Route path="/channels" element={<ChannelsPage />} />
         </Routes>
       </div>
     </Router>
