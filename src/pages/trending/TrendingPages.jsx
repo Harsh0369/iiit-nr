@@ -8,11 +8,37 @@ const API_KEY = "AIzaSyCHUfKUWyvMckHryTVj8lx6xRsoBog0M-Y";
 const SEARCH_URL = "https://www.googleapis.com/youtube/v3/search";
 const VIDEO_DETAILS_URL = "https://www.googleapis.com/youtube/v3/videos";
 
+const scrollbarStyles = `
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #CBD5E1 transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #CBD5E1;
+    border-radius: 20px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: #94A3B8;
+  }
+`;
+
 export default function TrendingPage() {
   const [trendingTopics, setTrendingTopics] = useState([]);
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [aiGeneratedData, setAiGeneratedData] = useState(null);
   const [input, setInput] = useState("");
+  const [generatedContent, setGeneratedContent] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchTrendingTopics = async () => {
@@ -88,15 +114,29 @@ export default function TrendingPage() {
     fetchTrendingTopics();
   }, []);
 
-  const handleTopicSelect = (topic) => {
-    setSelectedTopic(topic);
-    setAiGeneratedData({
-      title: `Optimized: ${topic.title}`,
-      seoTags: topic.tags,
-      script:
-        "AI-generated insights about the topic...\n\nHere's a detailed analysis of current trends in the selected category. The target audience appears to be primarily tech enthusiasts aged 18-34. Recommended content strategy:\n- Focus on practical demonstrations\n- Include comparison with competitors\n- Use trending hashtags: #TechUpdate #Innovation\n- Optimal video length: 8-12 minutes",
-      thumbnails: topic.thumbnails,
-    });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+
+    setIsLoading(true);
+    try {
+      // Simulate API call - Replace with your actual API call
+      const mockResponse = {
+        title: `AI Suggested: ${input}`,
+        seoTags: ["technology", "trending", "innovation", input.toLowerCase()],
+        thumbnails: [
+          "https://picsum.photos/seed/1/800/400",
+          "https://picsum.photos/seed/2/800/400",
+        ],
+        script: `Content Strategy for "${input}"\n\nTarget Audience Analysis:\n- Primary demographic: Tech enthusiasts aged 18-34\n- Interest in emerging technologies\n\nRecommended Approach:\n- Focus on practical demonstrations\n- Include market analysis\n- Highlight key innovations\n- Compare with existing solutions`
+      };
+
+      setGeneratedContent(mockResponse);
+    } catch (error) {
+      console.error("Error generating content:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const responsiveCarousel = {
@@ -118,167 +158,146 @@ export default function TrendingPage() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-50 text-gray-900 p-4 gap-4">
-      {/* Left Section - Trending Topics */}
-      <div className="w-full md:w-1/3 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="p-6 pb-4">
-          <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-            <FaFire className="text-orange-500" />
-            Trending Topics
-          </h2>
-          <p className="text-sm text-gray-500 mt-1">Latest tech trends</p>
+    <>
+      <style>{scrollbarStyles}</style>
+      <div className="flex flex-row min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 text-gray-900">
+        {/* Left Section - Trending Topics */}
+        <div className="w-1/3 bg-white shadow-lg border-r border-gray-200 h-screen sticky top-0 left-0">
+          <div className="p-6 pb-4 border-b border-gray-100 bg-white sticky top-0 z-10">
+            <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
+              <FaFire className="text-orange-500 text-3xl" />
+              Trending Topics
+            </h2>
+            <p className="text-sm text-gray-500 mt-2">Get inspired by what's trending</p>
+          </div>
+          
+          <div className="h-[calc(100vh-100px)] overflow-y-auto custom-scrollbar">
+            <div className="space-y-4 p-4">
+              {trendingTopics.map((topic) => (
+                <div
+                  key={topic.id}
+                  className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-all duration-300"
+                >
+                  <div className="relative aspect-video mb-3 rounded-lg overflow-hidden">
+                    <img
+                      src={topic.thumbnails[0]}
+                      alt={topic.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <h3 className="font-medium text-gray-800 line-clamp-2">{topic.title}</h3>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-        <ul className="space-y-2 p-4">
-          {trendingTopics.map((topic) => (
-            <li
-              key={topic.id}
-              className={`group p-4 rounded-lg transition-all duration-200 cursor-pointer ${
-                selectedTopic?.id === topic.id
-                  ? "bg-blue-50 border-2 border-blue-200"
-                  : "hover:bg-gray-50 border-2 border-transparent"
-              }`}
-              onClick={() => handleTopicSelect(topic)}
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3">
-                    <div className="flex-shrink-0">
-                      <img
-                        src={topic.thumbnails[0]}
-                        alt="Thumbnail"
-                        className="w-12 h-12 rounded-lg object-cover"
-                      />
+
+        {/* Right Section - Content Generator */}
+        <div className="flex-1 min-h-screen relative">
+          <div className="p-6 pb-24 custom-scrollbar">
+            {generatedContent ? (
+              <div className="space-y-6">
+                {/* Title */}
+                <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                  <h2 className="text-2xl font-bold text-gray-800">
+                    {generatedContent.title}
+                  </h2>
+                </div>
+
+                {/* SEO Tags and Thumbnails Grid */}
+                <div className="grid grid-cols-2 gap-6">
+                  {/* SEO Tags */}
+                  <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                    <h3 className="text-sm font-semibold text-gray-600 uppercase mb-4 flex items-center gap-2">
+                      <span className="w-8 h-[2px] bg-blue-500"></span>
+                      SEO Tags
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {generatedContent.seoTags.map((tag, index) => (
+                        <span
+                          key={index}
+                          className="px-3 py-1.5 bg-blue-50 text-blue-700 text-sm rounded-full border border-blue-100"
+                        >
+                          #{tag}
+                        </span>
+                      ))}
                     </div>
-                    <div className="flex-1">
-                      <h3 className="text-base font-semibold text-gray-800 truncate">
-                        {topic.title}
-                      </h3>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="inline-flex items-center px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full">
-                          <FaFire className="mr-1" />
-                          Trending
-                        </span>
-                        <span className="text-xs text-gray-500">
-                          {topic.reach}
-                        </span>
-                      </div>
+                  </div>
+
+                  {/* Thumbnails */}
+                  <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                    <h3 className="text-sm font-semibold text-gray-600 uppercase mb-4 flex items-center gap-2">
+                      <span className="w-8 h-[2px] bg-blue-500"></span>
+                      Suggested Thumbnails
+                    </h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      {generatedContent.thumbnails.map((thumb, index) => (
+                        <div key={index} className="relative aspect-video rounded-lg overflow-hidden">
+                          <img
+                            src={thumb}
+                            alt={`Thumbnail ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
-                <FaChevronRight
-                  className={`ml-2 flex-shrink-0 text-gray-400 group-hover:text-blue-500 ${
-                    selectedTopic?.id === topic.id ? "text-blue-500" : ""
-                  }`}
-                />
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
 
-      {/* Right Section - AI Output */}
-      <div className="flex-1 bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col">
-        {!selectedTopic ? (
-          <div className="flex-1 flex flex-col items-center justify-center p-8">
-            <div className="text-center max-w-md">
-              <FaFire className="text-4xl text-gray-300 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-500 mb-2">
-                Select a Trending Topic
-              </h3>
-              <p className="text-gray-400">
-                Choose from the trending topics on the left to view AI-generated
-                content strategies and optimization tips.
-              </p>
-            </div>
-          </div>
-        ) : (
-          <div className="flex-1 flex flex-col">
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-2xl font-bold text-gray-800">
-                {aiGeneratedData.title}
-              </h2>
-            </div>
-
-            <div className="flex-1 overflow-auto p-6 space-y-6">
-              {/* SEO Tags Section */}
-              <div>
-                <h3 className="text-sm font-semibold text-gray-600 uppercase mb-3">
-                  SEO Tags & Keywords
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {aiGeneratedData.seoTags.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full"
-                    >
-                      #{tag}
-                    </span>
-                  ))}
+                {/* Content Strategy */}
+                <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                  <h3 className="text-sm font-semibold text-gray-600 uppercase mb-4 flex items-center gap-2">
+                    <span className="w-8 h-[2px] bg-blue-500"></span>
+                    Content Strategy
+                  </h3>
+                  <div className="prose max-w-none p-6 bg-gray-50 rounded-xl border border-gray-200 whitespace-pre-wrap">
+                    {generatedContent.script}
+                  </div>
                 </div>
               </div>
-
-              {/* Content Script Section */}
-              <div>
-                <h3 className="text-sm font-semibold text-gray-600 uppercase mb-3">
-                  Content Strategy
-                </h3>
-                <div className="prose max-w-none p-4 bg-gray-50 rounded-lg border border-gray-200 whitespace-pre-wrap">
-                  {aiGeneratedData.script}
+            ) : (
+              <div className="flex items-center justify-center h-[calc(100vh-120px)]">
+                <div className="text-center max-w-md">
+                  <FaFire className="text-6xl text-orange-400 mx-auto mb-6 animate-pulse" />
+                  <h3 className="text-2xl font-bold text-gray-700 mb-4">
+                    Generate Your Content
+                  </h3>
+                  <p className="text-gray-500 leading-relaxed">
+                    Enter your topic below to get AI-generated content suggestions, SEO tags, and thumbnails
+                  </p>
                 </div>
               </div>
-
-              {/* Thumbnail Carousel */}
-              <div>
-                <h3 className="text-sm font-semibold text-gray-600 uppercase mb-3">
-                  Recommended Thumbnails
-                </h3>
-                <Carousel
-                  responsive={responsiveCarousel}
-                  infinite
-                  autoPlaySpeed={3000}
-                  customTransition="transform 300ms ease-in-out"
-                  containerClass="gap-2"
-                  itemClass="p-1"
-                  className="py-2"
-                >
-                  {aiGeneratedData.thumbnails.map((thumb, index) => (
-                    <div
-                      key={index}
-                      className="relative aspect-video overflow-hidden rounded-xl border border-gray-200 hover:border-blue-200 transition-all"
-                    >
-                      <img
-                        src={thumb}
-                        alt="Thumbnail"
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                      <span className="absolute bottom-2 left-2 text-white text-xs font-medium">
-                        Preview {index + 1}
-                      </span>
-                    </div>
-                  ))}
-                </Carousel>
-              </div>
-            </div>
-
-            {/* AI Chat Input */}
-            <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4">
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Ask AI to modify content (e.g., 'Make it more engaging for beginners...')"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                />
-                <button className="p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
-                  <FaPaperPlane className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
+            )}
           </div>
-        )}
+
+          {/* Input Section - Fixed at Bottom */}
+          <div className="fixed bottom-0 right-0 w-2/3 bg-white border-t border-gray-200 p-6 shadow-lg backdrop-blur-sm backdrop-filter">
+            <form onSubmit={handleSubmit} className="flex gap-3">
+              <input
+                type="text"
+                className="flex-1 p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 transition-all duration-200"
+                placeholder="Enter your topic (e.g., 'AI in Healthcare', 'Web3 Development')"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+              />
+              <button 
+                type="submit"
+                disabled={isLoading}
+                className="px-6 py-4 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 flex items-center gap-2"
+              >
+                {isLoading ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <span className="hidden sm:inline">Generate</span>
+                    <FaPaperPlane className="w-5 h-5" />
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
