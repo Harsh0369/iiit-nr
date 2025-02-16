@@ -173,7 +173,7 @@ export default function TrendingPage() {
                 {/* SEO Tags and Thumbnails */}
                 <div className="grid grid-cols-2 gap-6">
                   {/* SEO Tags */}
-                  <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                  <div className="bg-white p-6 rounded-xl border max-h-96 overflow-clip border-gray-200 shadow-sm">
                     <h3 className="text-sm font-semibold text-gray-600 uppercase mb-4">
                       SEO Tags
                     </h3>
@@ -190,7 +190,7 @@ export default function TrendingPage() {
                   </div>
 
                   {/* Thumbnails */}
-                  <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                  <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm max-h-96 overflow-clip">
                     <h3 className="text-sm font-semibold text-gray-600 uppercase mb-4">
                       Suggested Thumbnails
                     </h3>
