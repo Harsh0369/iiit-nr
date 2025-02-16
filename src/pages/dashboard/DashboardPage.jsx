@@ -132,20 +132,20 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex mt-2">
       {/* Sidebar */}
-      <div className="w-64 bg-gradient-to-b from-gray-100 to-gray-200 text-zinc-700 shadow-lg mt-14">
+      <div className="w-64 bg-gradient-to-b from-gray-50 to-gray-100 text-zinc-700 shadow-lg mt-14">
         <div className="p-4">
-          <h2 className="text-2xl font-bold mb-6">Sentiment Analyzer</h2>
+          <h2 className="text-2xl font-semi-bold ml-16 mb-6">MENU</h2>
           <div className="space-y-4">
             <div className="flex items-center space-x- hover:bg-blue-400 rounded-lg py-1 px- cursor-pointer">
-              <span className="text-3xl">📊</span>
+              <span className="text-2xl">📊</span>
               <span className="text-lg">Dashboard</span>
             </div>
             <div className="flex items-center space-x- hover:bg-blue-400 rounded-lg py-1 px- cursor-pointer">
-              <span className="text-3xl">🔗</span>
+              <span className="text-2xl">🔗</span>
               <span className="text-lg">YouTube Link</span>
             </div>
             <div className="flex items-center space-x- hover:bg-blue-400 rounded-lg py-1 px- cursor-pointer">
-              <span className="text-3xl">📈</span>
+              <span className="text-2xl">📈</span>
               <span className="text-lg">Analytics</span>
             </div>
           </div>
