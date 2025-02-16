@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   LineChart,
   Line,
@@ -10,66 +10,16 @@ import {
   PieChart,
   Pie,
   Cell,
+  BarChart,
+  Bar,
+  AreaChart,
+  Area,
+  RadarChart,
+  Radar,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
 } from "recharts";
-
-const videoData = [
-  {
-    id: 1,
-    title: "Video 1",
-    thumbnail: "https://via.placeholder.com/150",
-    comments: 120,
-    sentiment: "Positive",
-  },
-  {
-    id: 2,
-    title: "Video 2",
-    thumbnail: "https://via.placeholder.com/150",
-    comments: 95,
-    sentiment: "Neutral",
-  },
-  {
-    id: 3,
-    title: "Video 3",
-    thumbnail: "https://via.placeholder.com/150",
-    comments: 140,
-    sentiment: "Negative",
-  },
-  {
-    id: 4,
-    title: "Video 4",
-    thumbnail: "https://via.placeholder.com/150",
-    comments: 80,
-    sentiment: "Positive",
-  },
-  {
-    id: 5,
-    title: "Video 5",
-    thumbnail: "https://via.placeholder.com/150",
-    comments: 110,
-    sentiment: "Neutral",
-  },
-  {
-    id: 6,
-    title: "Video 6",
-    thumbnail: "https://via.placeholder.com/150",
-    comments: 100,
-    sentiment: "Negative",
-  },
-  {
-    id: 7,
-    title: "Video 7",
-    thumbnail: "https://via.placeholder.com/150",
-    comments: 90,
-    sentiment: "Positive",
-  },
-  {
-    id: 8,
-    title: "Video 8",
-    thumbnail: "https://via.placeholder.com/150",
-    comments: 130,
-    sentiment: "Neutral",
-  },
-];
 
 const lineData = [
   { name: "Jan", value: 65 },
@@ -92,11 +42,93 @@ export default function ChannelsPage() {
   const [filter, setFilter] = useState("All");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedMenuItem, setSelectedMenuItem] = useState("Dashboard");
+  const [channelName, setChannelName] = useState("");
+  const [videoData, setVideoData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
+  // Fetch video data from the API
+  const fetchChannelData = async () => {
+    if (!channelName) {
+      setError("Please enter a channel name.");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        "https://iiitnayaraipur-hackathon-backend-1.onrender.com/api/v1/analyse/channelAnalysis",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username: channelName }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const result = await response.text(); // Get the response as text
+      console.log("Raw Response:", result);
+
+      // Parse the JSON string into an object
+      const parsedData = JSON.parse(result);
+      console.log("Parsed Data:", parsedData);
+
+      if (parsedData.data) {
+        // Transform the fetched data into the required format
+        const transformedData = parsedData.data.videos.map((video) => ({
+          id: video.video_id,
+          title: `Video ${video.video_id}`,
+          thumbnail: video.thumbnails.high.url,
+          comments: parseInt(video.comments_count),
+          sentiment: "Neutral", // Default sentiment (can be updated based on your logic)
+          likes: parseInt(video.likes),
+          views: parseInt(video.views),
+          videoUrl: `https://www.youtube.com/watch?v=${video.video_id}`,
+        }));
+        setVideoData(transformedData);
+      } else {
+        setError("No data found for this channel.");
+      }
+    } catch (error) {
+      console.error("Error fetching channel data:", error);
+      setError("Failed to fetch data. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Filter videos based on sentiment
   const filteredVideos =
     filter === "All"
       ? videoData
       : videoData.filter((video) => video.sentiment === filter);
+
+  // Data for new graphs
+  const barData = videoData.map((video) => ({
+    name: video.title,
+    views: video.views,
+    likes: video.likes,
+    comments: video.comments,
+  }));
+
+  const areaData = videoData.map((video) => ({
+    name: video.title,
+    likes: video.likes,
+    comments: video.comments,
+  }));
+
+  const radarData = [
+    { subject: "Likes", A: videoData.reduce((acc, video) => acc + video.likes, 0), fullMark: 1000 },
+    { subject: "Comments", A: videoData.reduce((acc, video) => acc + video.comments, 0), fullMark: 1000 },
+    { subject: "Views", A: videoData.reduce((acc, video) => acc + video.views, 0), fullMark: 10000 },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
@@ -152,12 +184,31 @@ export default function ChannelsPage() {
               </svg>
             </button>
             <h1 className="text-3xl font-bold">Channels</h1>
+            <div className="flex items-center space-x-4">
+              <input
+                type="text"
+                placeholder="Enter Channel Name"
+                value={channelName}
+                onChange={(e) => setChannelName(e.target.value)}
+                className="border rounded-md px-4 py-2"
+              />
+              <button
+                onClick={fetchChannelData}
+                className="bg-blue-600 text-white px-4 py-2 rounded-md"
+                disabled={loading}
+              >
+                {loading ? "Searching..." : "Search"}
+              </button>
+            </div>
           </div>
         </header>
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Error Message */}
+          {error && <p className="text-red-500">{error}</p>}
+
           {/* Story-style Video Thumbnails */}
-          <div className="overflow-x-auto scrollbar-custom py-4 flex space-x-4">
+          <div className="overflow-x-auto scrollbar-custom py-4 flex space-x-4 mb-4 mt-2">
             {videoData.map((video) => (
               <div
                 key={video.id}
@@ -190,7 +241,7 @@ export default function ChannelsPage() {
           </div>
 
           {/* Video-wise Analysis */}
-          <div className="overflow-x-auto scrollbar-custom py-6">
+          <div className="overflow-x-auto scrollbar-custom py-6 mb-4">
             <div className="flex space-x-6">
               {filteredVideos.map((video) => (
                 <div
@@ -206,17 +257,16 @@ export default function ChannelsPage() {
                   <p className="text-sm text-gray-600">
                     Comments: {video.comments}
                   </p>
-                  <p
-                    className={`text-xs font-bold mt-1 ${
-                      video.sentiment === "Positive"
-                        ? "text-green-600"
-                        : video.sentiment === "Neutral"
-                        ? "text-yellow-600"
-                        : "text-red-600"
-                    }`}
+                  <p className="text-sm text-gray-600">Likes: {video.likes}</p>
+                  <p className="text-sm text-gray-600">Views: {video.views}</p>
+                  <a
+                    href={video.videoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
                   >
-                    {video.sentiment}
-                  </p>
+                    Watch on YouTube
+                  </a>
                 </div>
               ))}
             </div>
@@ -298,6 +348,60 @@ export default function ChannelsPage() {
                 </PieChart>
               </ResponsiveContainer>
             </ChartCard>
+
+            {/* New Graphs */}
+            <ChartCard title="Views Distribution">
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={barData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="views" fill="#3B82F6" />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartCard>
+
+            <ChartCard title="Likes vs Comments">
+              <ResponsiveContainer width="100%" height={250}>
+                <AreaChart data={areaData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Area
+                    type="monotone"
+                    dataKey="likes"
+                    stroke="#10B981"
+                    fill="#10B981"
+                    fillOpacity={0.3}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="comments"
+                    stroke="#F59E0B"
+                    fill="#F59E0B"
+                    fillOpacity={0.3}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </ChartCard>
+
+            <ChartCard title="Engagement Radar">
+              <ResponsiveContainer width="100%" height={250}>
+                <RadarChart data={radarData}>
+                  <PolarGrid />
+                  <PolarAngleAxis dataKey="subject" />
+                  <PolarRadiusAxis />
+                  <Radar
+                    dataKey="A"
+                    stroke="#3B82F6"
+                    fill="#3B82F6"
+                    fillOpacity={0.6}
+                  />
+                </RadarChart>
+              </ResponsiveContainer>
+            </ChartCard>
           </div>
         </main>
       </div>
@@ -311,12 +415,12 @@ export default function ChannelsPage() {
 
         .scrollbar-custom::-webkit-scrollbar-track {
           background: #f1f1f1;
-          border-radius: 4px;
+          border-radius: 10px;
         }
 
         .scrollbar-custom::-webkit-scrollbar-thumb {
           background: #888;
-          border-radius: 4px;
+          border-radius: 10px;
         }
 
         .scrollbar-custom::-webkit-scrollbar-thumb:hover {
@@ -327,11 +431,9 @@ export default function ChannelsPage() {
   );
 }
 
-function ChartCard({ title, children }) {
-  return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-4">{title}</h2>
-      <div className="h-60">{children}</div>
-    </div>
-  );
-}
+const ChartCard = ({ title, children }) => (
+  <div className="bg-white p-6 rounded-lg shadow-md">
+    <h3 className="text-xl font-semibold mb-4">{title}</h3>
+    {children}
+  </div>
+);

@@ -41,7 +41,7 @@ export default function TrendingPage() {
   useEffect(() => {
     const fetchTrendingTopics = async () => {
       try {
-        //const response = await axios.get(SEARCH_URL);
+        const response = await axios.get(SEARCH_URL);
         const videos = response.data?.ytTopics || [];
         const topics = videos.map((video) => ({
           id: Math.random().toString(36).substring(2, 9),
