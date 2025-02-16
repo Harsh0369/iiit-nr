@@ -2,7 +2,11 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BarChart3, MessageCircle, Users, Brain, ArrowRight, Mic, MessageSquare, Github, Linkedin, Twitter } from 'lucide-react';
 import { Button } from '../../components/ui/button';
-import  Footer from '../../components/ui/Footer';
+import Footer from '../../components/ui/Footer';
+import arjun from '../../assets/arjun.jpg';
+import harsh from '../../assets/harsh.jpg';
+import divyanshu from '../../assets/divyanshu.jpg';
+import bharat from '../../assets/bharat.jpg';
 
 const features = [
   {
@@ -31,29 +35,25 @@ const teamMembers = [
   {
     name: "Harsh Agarwal",
     role: "Web Developer",
-    image:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+    image:harsh,
     bio: "Leading the vision for next-generation sentiment analysis.",
   },
   {
     name: "Arjun Verma",
     role: "Web Developer",
-    image:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+    image: arjun,
     bio: "Architecting innovative solutions in AI and machine learning.",
   },
   {
     name: "Divyanshu Mishra",
     role: "AI-ML Engineer",
-    image:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+    image: divyanshu,
     bio: "Crafting intuitive user experiences for complex data analysis.",
   },
   {
     name: "Bharat Kushwaha",
     role: "App Developer",
-    image:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+    image: bharat,
     bio: "Crafting intuitive user experiences for complex data analysis.",
   },
 ];
@@ -149,7 +149,7 @@ export default function LandingPage() {
                   <img
                     src={member.image}
                     alt={member.name}
-                    className="w-full h-48 object-cover"
+                    className="w-full h-64 object-cover"
                   />
                 </div>
                 <div className="p-6">
