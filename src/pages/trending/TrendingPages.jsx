@@ -100,8 +100,8 @@ export default function TrendingPage() {
       <div className="flex flex-row min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 text-gray-900">
         {/* Left Section - Trending Topics */}
         <div className="w-1/3 bg-white shadow-lg border-r border-gray-200 h-screen sticky top-0 left-0">
-          <div className="p-6 pb-4 border-b border-gray-100 bg-white sticky top-0 z-10">
-            <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
+          <div className="p-6 border-b border-gray-100 bg-white sticky top-0 z-9">
+            <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-3 mt-10">
               <FaFire className="text-orange-500 text-3xl" />
               Trending Topics
             </h2>
@@ -185,7 +185,7 @@ export default function TrendingPage() {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-center h-[calc(100vh-120px)]">
+              <div className="flex items-center justify-center h-[calc(100vh-120px)] mt-10">
                 <p className="text-gray-500">
                   Enter a topic to generate content!
                 </p>

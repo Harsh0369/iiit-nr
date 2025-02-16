@@ -116,8 +116,8 @@ export default function ChatbotPage() {
   return (
     <div className="flex h-screen bg-white text-black max-w-screen">
       {/* Sidebar */}
-      <div className="relative w-1/4 bg-gray-100 p-4 border-r border-gray-300">
-        <h2 className="text-xl font-semibold mb-4 mt-20">Chat History</h2>
+      <div className="relative w-1/4 bg-gray-100 p-4 border-r border-gray-300 mt-16">
+        <h2 className="text-xl font-semibold mb-4 mt-2 bg-blue-500 p-2 rounded-lg text-white">Chat History</h2>
         <ul className="space-y-2">
           {chatSessions.map((session, index) => (
             <li
@@ -129,9 +129,9 @@ export default function ChatbotPage() {
             </li>
           ))}
         </ul>
-        <div className="w-full bottom-10 absolute -ml-4 p-4">
+        <div className="w-full bottom-1 absolute -ml-4 p-4">
           <button
-            className="bg-blue-500 p-2 w-full rounded-lg hover:bg-blue-400"
+            className="bg-blue-500 p-2 w-full rounded-lg hover:bg-blue-400 transition-transform transform hover:scale-105 text-white"
             onClick={startNewChat}
           >
             New Chat
@@ -140,7 +140,7 @@ export default function ChatbotPage() {
       </div>
 
       {/* Chat Section */}
-      <div className="flex-1 flex flex-col justify-end p-6 mt-16">
+      <div className="flex-1 flex flex-col justify-end p-2 mt-16">
         <div className="w-full space-y-4 overflow-y-auto mb-4">
           {messages.map((message, index) => (
             <div
@@ -164,7 +164,7 @@ export default function ChatbotPage() {
         </div>
 
         {/* Input Section */}
-        <div className="w-full flex items-center bg-gray-100 p-4 rounded-lg shadow-lg">
+        <div className="w-full flex items-center bg-gray-100 p-4 rounded-lg shadow-lg mb-1">
           <input
             type="text"
             className="flex-1 bg-transparent border-none outline-none text-black placeholder-gray-500"

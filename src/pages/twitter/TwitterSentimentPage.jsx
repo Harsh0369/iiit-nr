@@ -88,7 +88,7 @@ export default function TwitterSentimentPage() {
     <div className="min-h-screen bg-gray-50 text-gray-900 flex">
       {/* Sidebar */}
       <aside className="w-64 bg-white shadow-lg p-6">
-        <h2 className="text-xl font-bold text-gray-800 mb-6">Dashboard</h2>
+        <h2 className="text-xl font-bold text-gray-800 mb-6 mt-16">Dashboard</h2>
         <nav className="space-y-4">
           {[
             { name: "Dashboard", id: "dashboard" },

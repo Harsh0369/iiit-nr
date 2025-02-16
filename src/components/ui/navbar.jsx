@@ -17,9 +17,9 @@ export function Navbar() {
 
   return (
     <nav className="bg-white shadow-sm border-b">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 fixed top-0 z-10 bg-white w-full"> 
         <div className="flex justify-between h-16">
-          <div className="flex">
+          <div className="flex justify-between">
             <Link to="/" className="flex items-center">
               <BarChart3 className="h-6 w-6 text-blue-600" />
               <span className="ml-2 text-xl font-semibold">SentiMent</span>
@@ -88,7 +88,7 @@ export function Navbar() {
               </Link>
             </div>
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center justify-between">
             <Button
               variant="ghost"
               size="icon"
