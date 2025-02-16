@@ -47,16 +47,6 @@ export function Navbar() {
                 Channels
               </Link>
               <Link
-                to="/twitter"
-                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                  location.pathname === "/twitter"
-                    ? "border-blue-500 text-gray-900"
-                    : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
-                }`}
-              >
-                Twitter
-              </Link>
-              <Link
                 to="/trending"
                 className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
                   location.pathname === "/trending"

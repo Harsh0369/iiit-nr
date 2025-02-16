@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BarChart3, MessageCircle, Users, Brain, ArrowRight, Mic, MessageSquare, Github, Linkedin, Twitter } from 'lucide-react';
 import { Button } from '../../components/ui/button';
+import  Footer from '../../components/ui/Footer';
 
 const features = [
   {
@@ -72,12 +73,13 @@ export default function LandingPage() {
                 Understand Your Social Media Impact
               </h1>
               <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-                Transform your social media data into actionable insights with our advanced sentiment analysis platform.
+                Transform your social media data into actionable insights with
+                our advanced sentiment analysis platform.
               </p>
               <div className="flex justify-center gap-4">
                 <Button
                   size="lg"
-                  onClick={() => navigate('/dashboard')}
+                  onClick={() => navigate("/dashboard")}
                   className="bg-blue-600 hover:bg-blue-700"
                 >
                   Get Started
@@ -86,7 +88,7 @@ export default function LandingPage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  onClick={() => navigate('/chatbot')}
+                  onClick={() => navigate("/chatbot")}
                 >
                   Try Demo
                 </Button>
@@ -119,9 +121,7 @@ export default function LandingPage() {
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600">
-                  {feature.description}
-                </p>
+                <p className="text-gray-600">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -185,21 +185,20 @@ export default function LandingPage() {
                 Intelligent Chatbot Assistant
               </h2>
               <p className="text-xl text-gray-600 mb-8">
-                Get instant answers about your social media sentiment analysis with our AI-powered chatbot. Support for both text and voice interactions.
+                Get instant answers about your social media sentiment analysis
+                with our AI-powered chatbot. Support for both text and voice
+                interactions.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button
                   size="lg"
-                  onClick={() => navigate('/chatbot')}
+                  onClick={() => navigate("/chatbot")}
                   className="bg-blue-600 hover:bg-blue-700"
                 >
                   <MessageSquare className="mr-2 h-5 w-5" />
                   Start Chat
                 </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                >
+                <Button size="lg" variant="outline">
                   <Mic className="mr-2 h-5 w-5" />
                   Try Voice
                 </Button>
@@ -212,7 +211,9 @@ export default function LandingPage() {
                     <Brain className="h-4 w-4 text-blue-600" />
                   </div>
                   <div className="ml-3">
-                    <p className="text-sm font-medium text-gray-900">AI Assistant</p>
+                    <p className="text-sm font-medium text-gray-900">
+                      AI Assistant
+                    </p>
                     <p className="text-xs text-gray-500">Online</p>
                   </div>
                 </div>
@@ -220,7 +221,8 @@ export default function LandingPage() {
                   <div className="flex items-end">
                     <div className="bg-blue-50 rounded-lg p-3 max-w-xs">
                       <p className="text-sm text-gray-900">
-                        Hello! How can I help you analyze your social media sentiment today?
+                        Hello! How can I help you analyze your social media
+                        sentiment today?
                       </p>
                     </div>
                   </div>
@@ -237,6 +239,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+      <Footer />
     </div>
   );
 }
