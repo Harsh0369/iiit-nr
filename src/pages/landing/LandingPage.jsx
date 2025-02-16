@@ -31,6 +31,17 @@ const features = [
   }
 ];
 
+const Home = () => {
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: home_lottie,
+    rendererSettings: {
+      preserveAspectRatio: 'xMidYMid slice'
+    },
+  }
+}
+
 const teamMembers = [
   {
     name: "Harsh Agarwal",
@@ -79,7 +90,7 @@ export default function LandingPage() {
               <div className="flex justify-center gap-4">
                 <Button
                   size="lg"
-                  onClick={() => navigate("/dashboard")}
+                  onClick={() => navigate("/trending")}
                   className="bg-blue-600 hover:bg-blue-700"
                 >
                   Get Started
