@@ -10,7 +10,7 @@ export function Navbar() {
 
   const handleLogout = () => {
     // TODO: Implement logout logic
-    navigate("/auth");
+    navigate("/login"); // Redirect to login after logout
   };
 
   return (
