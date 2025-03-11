@@ -12,8 +12,9 @@ import {
   Linkedin,
   Twitter,
 } from "lucide-react";
-import { Button } from "../../components/ui/button";
+import { Button } from "../../components/ui/Button";
 import Footer from "../../components/ui/Footer";
+//import Header from "../../components/ui/Header";
 import arjun from "../../assets/arjun.jpg";
 import harsh from "../../assets/harsh.jpg";
 import divyanshu from "../../assets/divyanshu.jpg";
@@ -76,6 +77,7 @@ export default function LandingPage() {
 
   return (
     <div className="bg-gray-900 text-gray-200">
+      {/* <Header /> */}
       {/* Hero Section */}
       <section className="relative overflow-hidden min-h-screen flex items-center pt-20">
         <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-indigo-950 to-gray-900 z-0" />

@@ -3,12 +3,9 @@ import { FaPaperPlane, FaFire } from "react-icons/fa";
 import axios from "axios";
 
 // API Endpoints
-const SEARCH_URL =
-  "https://iiitnayaraipur-hackathon-backend-1.onrender.com/api/v1/trendAnalysis/trendingTopics";
-const AI_ANALYSIS_URL =
-  "https://iiitnayaraipur-hackathon-backend-1.onrender.com/api/v1/trendAnalysis/fetchAIAnalysis";
-const SEO_THUMBNAILS_URL =
-  "https://iiitnayaraipur-hackathon-backdrop-1.onrender.com/api/v1/trendAnalysis/fetchSeoThumbnails";
+const SEARCH_URL = import.meta.env.VITE_SEARCH_URL;
+const AI_ANALYSIS_URL = import.meta.env.VITE_AI_ANALYSIS_URL;
+const SEO_THUMBNAILS_URL = import.meta.env.VITE_SEO_THUMBNAILS_URL;
 
 // Custom scrollbar styles
 const scrollbarStyles = `
